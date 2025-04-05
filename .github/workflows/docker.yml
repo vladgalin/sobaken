@@ -19,9 +19,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push image
-        uses: docker/build-push-action@v4
-        with:
-          context: ~/gpt-test/docker-demo
-          file: ~/gpt-test/docker-demo/Dockerfile
-          push: true
-          tags: ${{ secrets.IMAGE_NAME }}:latest
+  uses: docker/build-push-action@v4
+  with:
+    context: ./docker-demo       # или другой путь до Dockerfile
+    file: ./docker-demo/Dockerfile
+    push: true
+    tags: ${{ secrets.IMAGE_NAME }}:latest
+
