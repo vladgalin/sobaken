@@ -21,5 +21,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v4
         with:
+          context: ./gpt-test/docker-demo
+          file: ./gpt-test/docker-demo/Dockerfile
           push: true
           tags: ${{ secrets.IMAGE_NAME }}:latest
