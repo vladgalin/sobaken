@@ -25,4 +25,24 @@ jobs:
           file: ./docker-demo/Dockerfile
           push: true
           tags: ${{ secrets.IMAGE_NAME }}:latest
+  deploy:
+    needs: docker-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd /root/gpt-test/docker-demo
+            docker pull vladngalin/sobaken:latest
+            docker-compose up -d
+          EOF
 
