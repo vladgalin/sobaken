@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Deploy Docker Image
 
 on:
   push:
@@ -24,7 +24,10 @@ jobs:
           context: ./docker-demo
           file: ./docker-demo/Dockerfile
           push: true
-          tags: ${{ secrets.IMAGE_NAME }}:latest
+          tags: |
+            ${{ secrets.IMAGE_NAME }}:latest
+            ${{ secrets.IMAGE_NAME }}:${{ github.run_number }}
+
   deploy:
     needs: docker-build
     runs-on: ubuntu-latest
@@ -42,7 +45,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /root/gpt-test/docker-demo
-            docker pull vladngalin/sobaken:latest
+            docker pull ${{ secrets.IMAGE_NAME }}:latest
             docker-compose up -d
           EOF
-

@@ -1,0 +1,23 @@
+image:
+  repository: vladngalin/docker-demo
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: flask.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+env:
+  API_KEY: "my-super-secret-token"
+  APP_MODE: "production"
+  WELCOME_MESSAGE: "По умолчанию: Привет, брат! 🚀"

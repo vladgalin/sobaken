@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      volumes:
+        - name: entrypoint-vol
+          configMap:
+            name: flask-entrypoint
+            defaultMode: 0755
+        - name: logs-vol
+          emptyDir: {}
+      containers:
+        - name: flask
+          image: vladngalin/docker-demo:latest
+          ports:
+            - containerPort: 5000
+          command: ["/bin/bash", "/app/entrypoint.sh"]
+          volumeMounts:
+            - name: entrypoint-vol
+              mountPath: /app/entrypoint.sh
+              subPath: entrypoint.sh
+              readOnly: true
+            - name: logs-vol
+              mountPath: /logs
+          env:
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: flask-secrets
+                  key: API_KEY
+            - name: APP_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: flask-config
+                  key: APP_MODE
+            - name: WELCOME_MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: flask-config
+                  key: WELCOME_MESSAGE
